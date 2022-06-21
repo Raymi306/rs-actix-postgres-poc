@@ -1,0 +1,18 @@
+[package]
+name = "rs-actix-postgres-example"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+actix-web = "4"
+argon2 = "0.3"
+config = "0.13.1"
+chrono = { version = "0.4.19", features = ["serde"] }
+deadpool-postgres = { version = "0.10.1", features = ["serde"] }
+derive_more = "0.99.2"
+dotenv = "0.15.0"
+rand_core = { version = "0.6", features = ["std"] }
+serde = { version = "1.0.104", features = ["derive"] }
+tokio-pg-mapper = "0.2.0"
+tokio-pg-mapper-derive = "0.2.0"
+tokio-postgres = { version="0.7.5", features=["with-chrono-0_4"] }
