@@ -1,10 +1,9 @@
 use crate::{errors::Error, models::Account};
 use deadpool_postgres::Client;
-use tokio_pg_mapper::FromTokioPostgresRow;
+use tokio_postgres::error::SqlState;
 
-pub async fn add_user(client: &Client, user_info: Account) -> Result<i32, Error> {
+pub async fn add_user(client: &Client, user_info: Account) -> Result<i64, Error> {
     let _stmt = include_str!("../sql/add_user.sql");
-    let _stmt = _stmt.replace("$table_fields", &Account::sql_table_fields());
     let stmt = client.prepare(&_stmt).await.unwrap();
 
     let result = client
@@ -18,8 +17,13 @@ pub async fn add_user(client: &Client, user_info: Account) -> Result<i32, Error>
             ],
         )
         .await
-        .or_else(|_| Err(Error::NotFound)) // more applicable for SELECTs
-        .unwrap()
+        .map_err(|error| {
+            if *error.code().unwrap() == SqlState::UNIQUE_VIOLATION {
+                return Error::DuplicateEntry
+            } else {
+                return Error::PGError(error)
+            }
+        })?
         .get("account_id");
-    Ok(result)
+    return Ok(result)
 }

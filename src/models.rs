@@ -20,7 +20,7 @@ pub struct NewAccountJSON {
 #[derive(Deserialize, PostgresMapper, Serialize)]
 #[pg_mapper(table = "account")]
 pub struct Account {
-    pub account_id: Option<i32>,
+    pub account_id: Option<i64>,
     pub created_at: Option<DateTime<Utc>>,
     pub modified_at: Option<DateTime<Utc>>,
     pub user_name: String,

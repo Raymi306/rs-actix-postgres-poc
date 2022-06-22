@@ -10,6 +10,6 @@ pub async fn add_account(
     let account_info: NewAccountJSON = account.into_inner();
     let client: Client = db_pool.get().await.map_err(AppError::PoolError)?;
     let account = Account::new(account_info);
-    let new_account_id: i32 = db::add_user(&client, account).await?;
+    let new_account_id: i64 = db::add_user(&client, account).await?;
     Ok(HttpResponse::Ok().json(new_account_id))
 }
