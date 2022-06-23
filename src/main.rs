@@ -1,10 +1,12 @@
-mod errors;
-mod models;
-mod db;
-mod handlers;
 mod config;
+mod db;
+mod errors;
+mod guards;
+mod handlers;
+mod models;
 
-use actix_web::{web, App, HttpServer};
+use actix_web::{web, App, HttpServer, guard::fn_guard};
+use guards::authorization_guard;
 use handlers::add_account;
 use tokio_postgres::NoTls;
 
@@ -16,7 +18,10 @@ async fn main() -> std::io::Result<()> {
     let server = HttpServer::new(move || {
         App::new()
             .app_data(web::Data::new(pool.clone()))
-            .service(web::resource("/users").route(web::post().to(add_account)))
+            .service(web::resource("/users")
+                     .route(web::post().to(add_account))
+                     .guard(fn_guard(authorization_guard))
+                     )
     })
     .bind(config.server_addr.clone())?
     .run();

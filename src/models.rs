@@ -9,7 +9,7 @@ use chrono::{ DateTime, Utc };
 use serde::{ Deserialize, Serialize };
 use tokio_pg_mapper_derive::PostgresMapper;
 
-#[derive(Deserialize, Serialize)]
+#[derive(Debug, Deserialize)]
 pub struct NewAccountJSON {
     pub user_name: String,
     pub email: String,
@@ -17,7 +17,7 @@ pub struct NewAccountJSON {
     pub password_raw: String,
 }
 
-#[derive(Deserialize, PostgresMapper, Serialize)]
+#[derive(Debug, Deserialize, PostgresMapper, Serialize)]
 #[pg_mapper(table = "account")]
 pub struct Account {
     pub account_id: Option<i64>,
@@ -26,6 +26,7 @@ pub struct Account {
     pub user_name: String,
     pub email: String,
     pub full_name: String,
+    #[serde(skip)]
     pub password: String,
 }
 
@@ -46,3 +47,18 @@ impl Account {
     }
 }
 
+#[derive(Debug, Deserialize)]
+pub struct LoginInfo {
+    pub user_name: String,
+    pub password_raw: String,
+}
+
+#[derive(Debug, Serialize)]
+pub struct LoginResponse {
+    pub token: String,
+}
+
+#[derive(Debug, Serialize)]
+pub struct Claims {
+    pub sub: String,
+}
